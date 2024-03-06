@@ -1,47 +1,83 @@
-import { useState } from "react";
-import Input from './Form/Input';
-import useForm from './Hooks/useForm';
+import React from 'react'
+import Radio from './components/radio/Radio'
+
+const perguntas = [
+  {
+    pergunta: 'Qual método é utilizado para criar componentes?',
+    options: [
+      'React.makeComponent()',
+      'React.createComponent()',
+      'React.createElement()',
+    ],
+    resposta: 'React.createElement()',
+    id: 'p1',
+  },
+  {
+    pergunta: 'Como importamos um componente externo?',
+    options: [
+      'import Component from "./Component"',
+      'require("./Component")',
+      'import "./Component"',
+    ],
+    resposta: 'import Component from "./Component"',
+    id: 'p2',
+  },
+  {
+    pergunta: 'Qual hook não é nativo?',
+    options: ['useEffect()', 'useFetch()', 'useCallback()'],
+    resposta: 'useFetch()',
+    id: 'p3',
+  },
+  {
+    pergunta: 'Qual palavra deve ser utilizada para criarmos um hook?',
+    options: ['set', 'get', 'use'],
+    resposta: 'use',
+    id: 'p4',
+  },
+];
 
 const App = () => {
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [respostas, setRespostas] = React.useState({
+    p1: '',
+    p2: '',
+    p3: '',
+    p4: '',
+  });
 
-  const cep = useForm('cep');
-  const email = useForm('email');
-  const nome = useForm(); // No argument passed here
-  const sobrenome = useForm(); // No argument passed here
+  const [slide, setSlide] = React.useState(0);
+  const [resultado, setResultado] = React.useState(null);
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    if (cep.validate() && email.validate() && nome.validate()) {
-      setFormSubmitted(true);
-      console.log('Enviar');
+  const handleChange = ({ target }) => {
+    setRespostas({...respostas, [target.id]: target.value});
+  }
+
+  const resultadoFinal = () => {
+    const corretas = perguntas.filter(({id, resposta}) => respostas[id] === resposta );
+    setResultado(`Você acertou: ${corretas.length} de ${perguntas.length}`);
+  }
+
+  const handleClick = () => {
+    if (slide < perguntas.length - 1) {
+      setSlide(slide + 1)
     } else {
-      console.log('Não enviar');
+        setSlide(slide + 1)
+        resultadoFinal();
     }
   }
 
   return (
     <>
-      <div className="container">
-        <form onSubmit={handleSubmit} className="flex flex-col">
-          <Input label="Nome" id="nome" type="text" {...nome} />
-          <Input label="Sobrenome" id="sobrenome" type="text" {...sobrenome} />
-          <Input
-            label="CEP"
-            id="cep"
-            type="text"
-            placeholder="00000-000"
-            {...cep}
-          />
-          <Input label="Email" id="email" type="email" {...email} />
-          <div className="flex items-center justify-center">
-            <button className="bg-blue-600 text-white px-5 py-2 rounded-lg mt-5">Enviar</button>
-          </div>
+       <div className="container mt-10">
+        <form onSubmit={(event) => event.preventDefault()}>
+        {perguntas.map((pergunta, index) => (
+          <Radio active={slide === index} key={pergunta.id} value={respostas[pergunta.id]} onChange={handleChange} {...pergunta}/>
+        ))}
+        {resultado ? <p>{resultado}</p> : <button onClick={handleClick} className="bg-blue-600 py-2 px-5 text-white">Próxima</button>}
         </form>
-        {formSubmitted && <p className="text-green-500">Formulário enviado com sucesso!</p>}
-      </div>
+    </div>
     </>
-  );
-};
+   
+  )
+}
 
-export default App;
+export default App

@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* Estilo para o elemento fieldset */
+fieldset {
+  border: 1px solid #ccc;
+  /* Borda com cor cinza */
+  padding: 2rem;
+  /* Espaçamento interno de 10px */
+  margin-bottom: 20px;
+  /* Espaçamento externo inferior de 20px */
+  border-radius: 5px;
+  /* Borda arredondada */
+}
